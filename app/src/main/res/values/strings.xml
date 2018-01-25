@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Smart City App</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="prompt">Severity</string>
+    <string-array name="severity">
+
+        <item>Minor</item>
+
+        <item>Moderate</item>
+
+        <item>Severe</item>
+
+    </string-array>
+</resources>
