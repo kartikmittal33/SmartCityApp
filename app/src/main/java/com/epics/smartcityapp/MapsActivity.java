@@ -1,6 +1,5 @@
 package com.epics.smartcityapp;
 
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
