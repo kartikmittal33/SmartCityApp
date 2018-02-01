@@ -67,7 +67,7 @@
             <Button
                 android:id="@+id/send"
                 android:layout_width="0dp"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:layout_height="75dp"
                 android:layout_marginTop="350dp"
                 android:background="@color/colorPrimary"
