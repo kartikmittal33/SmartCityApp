@@ -42,7 +42,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
                 android:onClick="getCords"
-                android:text="Search" />
+                android:text="Search Bar" />
 
 
             <LinearLayout
