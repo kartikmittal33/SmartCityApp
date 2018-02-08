@@ -2,17 +2,24 @@ package com.epics.smartcityapp;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
@@ -29,18 +36,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 //main activity to implement maps and camera functionality
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int CAMERA_REQUEST = 1888;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
-
-
-    private GoogleMap mMap;  //map object
     Spinner spinner;  //severity chooser object
     // EditText edtAddress;  //input address bar
     String autoSelect;
     Button search;  //search address bar
     Button send;
+    private GoogleMap mMap;  //map object
     private TextView popup;
 
 
@@ -65,8 +74,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.setPrompt("Select your favorite Planet!");
+        spinner.setPrompt("Select");
+        spinner.setAdapter(
+                new NothingSelectedSpinnerAdapter(
+                        adapter,
+                        R.layout.contact_spinner_row_nothing_selected,
+                        // R.layout.contact_spinner_nothing_selected_dropdown, // Optional
+                        this));
+       // spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getBaseContext(), "Please select something", Toast.LENGTH_LONG).show();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+    //            Toast.makeText(getBaseContext(), "Please select something", Toast.LENGTH_LONG).show();
+            }
+        });
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -74,7 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                autoSelect=place.getAddress().toString();
+                autoSelect = place.getAddress().toString();
 
             }
 
@@ -87,7 +115,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void onDataSent(View v){
+    public void onDataSent(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
         builder.setCancelable(true);
         builder.setTitle(null);
@@ -121,7 +149,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
                 if (resultCode == RESULT_OK) {
                     Place place = PlaceAutocomplete.getPlace(this, data);
-                    autoSelect=place.getName().toString();
+                    autoSelect = place.getName().toString();
                 } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                     Status status = PlaceAutocomplete.getStatus(this, data);
 
@@ -144,8 +172,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     }
-
-
 
 
     //works with HttpDataHandler (Geocoder) class to return cords from address
@@ -188,7 +214,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String lng = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
                         .getJSONObject("location").get("lng").toString();
 
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(lat),Double.parseDouble(lng)),18));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)), 18));
 
                 if (dialog.isShowing()) {
                     dialog.dismiss();
@@ -199,7 +225,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
         }
-
 
 
     }
