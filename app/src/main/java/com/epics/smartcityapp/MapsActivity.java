@@ -52,6 +52,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;  //map object
     private TextView popup;
 
+    private TextView nothing;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
