@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.*;
+import com.google.android.gms.location.places.*;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
@@ -31,11 +34,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,6 +58,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Button send;
     private GoogleMap mMap;  //map object
     private TextView popup;
+    String lat = Double.toString(40.424544);  // latitude
+    String lng = Double.toString(-86.918871);  // longitude
+    String encodedImage = "";
+    String severity = "";
 
 
     @Override
@@ -66,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // edtAddress = (EditText) findViewById(R.id.btn_place);       //initialize address bar
         search = (Button) findViewById(R.id.search);        //initialize search bar
         send = (Button) findViewById(R.id.send);
+
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -86,8 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getBaseContext(), "Please select something", Toast.LENGTH_LONG).show();
-
+//                Toast.makeText(getBaseContext(), "Please select something", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -126,6 +137,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 dialogInterface.cancel();
             }
         });
+
+
+        //FIREBASE IMPLEMENTATION
+
+//        // Write a message to the database
+
+
+//
+//        myRef.setValue("sent");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference();
+
+        Pothole pothole = new Pothole(lat,lng,encodedImage,severity);
+        Pothole pothole1 = new Pothole(lat,lng,encodedImage,severity);
+
+
+        databaseReference.child("pothole").setValue(pothole);
+        databaseReference.child("pothole1").setValue(pothole1);
+
+
         builder.show();
     }
 
@@ -144,12 +175,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //when camera is activated, take picture and return the photo as a bitmap
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bitmap photo;
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            photo = (Bitmap) data.getExtras().get("data");
+            try {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+                byte[] byteArray = stream.toByteArray();
+                encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+            }
+            catch (NullPointerException e) {
+                System.out.println("Cannot covert");
+            }
+
+
             if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
                 if (resultCode == RESULT_OK) {
                     Place place = PlaceAutocomplete.getPlace(this, data);
                     autoSelect = place.getName().toString();
+
+                    //converting bitmap to base64 string to send it to server
+                    try {
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+                        byte[] byteArray = stream.toByteArray();
+                        encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+                    }
+                    catch (NullPointerException e) {
+                        System.out.println("Cannot covert");
+                    }
+
+
                 } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                     Status status = PlaceAutocomplete.getStatus(this, data);
 
@@ -159,6 +219,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         }
+
+
+
     }
 
     //create map and center it around west lala
@@ -208,10 +271,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 JSONObject jsonObject = new JSONObject(s);
 
-                String lat = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
+                lat = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
                         .getJSONObject("location").get("lat").toString();
 
-                String lng = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
+                lng = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
                         .getJSONObject("location").get("lng").toString();
 
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)), 18));

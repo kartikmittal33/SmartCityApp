@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "981543414549",
+    "firebase_url": "https://smart-city-app-epics.firebaseio.com",
+    "project_id": "smart-city-app-epics",
+    "storage_bucket": "smart-city-app-epics.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:981543414549:android:6edc4f917e350b3f",
+        "android_client_info": {
+          "package_name": "com.epics.smartcityapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "981543414549-ma1ca3etal12t0jpv9locioqp2sge1dc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.epics.smartcityapp",
+            "certificate_hash": "642b776e272e4073ff82ccef6bbb9899be54f3a4"
+          }
+        },
+        {
+          "client_id": "981543414549-l5s5211g887fm0bfmg0lfu4u6rijv534.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByUosS96lPAVxhy0PigNqzkUA8s7w4F0I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "981543414549-l5s5211g887fm0bfmg0lfu4u6rijv534.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
