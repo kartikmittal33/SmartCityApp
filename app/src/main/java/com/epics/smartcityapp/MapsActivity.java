@@ -46,6 +46,8 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 //main activity to implement maps and camera functionality
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -60,8 +62,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView popup;
     String lat = Double.toString(40.424544);  // latitude
     String lng = Double.toString(-86.918871);  // longitude
-    String encodedImage = "";
-    String severity = "";
+    String encodedImage = "";           //converting image to BASE64 to send it to server
+                                        // read it from website and decrypting it to get image back
+    String severity = "Not selected";
 
 
     @Override
@@ -138,23 +141,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+//        if (spinner.getSelectedItem().toString().equals(""))
+
+        //setting the severity as selected in the spinner
+        severity = spinner.getSelectedItem().toString();
+
 
         //FIREBASE IMPLEMENTATION
 
-//        // Write a message to the database
-
-
-//
-//        myRef.setValue("sent");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference();
 
         Pothole pothole = new Pothole(lat,lng,encodedImage,severity);
-        Pothole pothole1 = new Pothole(lat,lng,encodedImage,severity);
 
+        //get the key from the database to append the new pothole information in the server
+        String key = databaseReference.push().getKey();
 
-        databaseReference.child("pothole").setValue(pothole);
-        databaseReference.child("pothole1").setValue(pothole1);
+        //sending the data as a object to the server with the unique key
+        databaseReference.child(key).setValue(pothole);
 
 
         builder.show();
