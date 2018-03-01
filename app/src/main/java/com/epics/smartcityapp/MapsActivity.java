@@ -46,6 +46,10 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,6 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String encodedImage = "";           //converting image to BASE64 to send it to server
                                         // read it from website and decrypting it to get image back
     String severity = "Not selected";
+    String timeStamp;
 
 
     @Override
@@ -135,6 +140,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setTitle(null);
         builder.setMessage("The data has been sent");
 
+        //get the time when the data was sent and store it in a string
+
+        Date date = Calendar.getInstance().getTime();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        timeStamp = simpleDateFormat.format(date);
+        System.out.println(timeStamp);
 
         //if the user has not selected severity or clicked picture or both
         //send an alert and don't send the data to the server
@@ -153,13 +164,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //setting the severity as selected in the spinner
             severity = spinner.getSelectedItem().toString();
 
+            //get the time when the data was sent and store it in a string
+            timeStamp = Calendar.getInstance().toString();
+            System.out.println(timeStamp);
+
 
             //FIREBASE IMPLEMENTATION
 
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference databaseReference = database.getReference();
 
-            Pothole pothole = new Pothole(lat, lng, encodedImage, severity);
+            Pothole pothole = new Pothole(lat, lng, encodedImage, severity,timeStamp);
 
             //get the key from the database to append the new pothole information in the server
             String key = databaseReference.push().getKey();
@@ -197,6 +212,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             photo = (Bitmap) data.getExtras().get("data");
             try {
+
+                //converting bitmap to base64 string to send it to server
+
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
 
@@ -213,20 +231,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (resultCode == RESULT_OK) {
                     Place place = PlaceAutocomplete.getPlace(this, data);
                     autoSelect = place.getName().toString();
-
-                    //converting bitmap to base64 string to send it to server
-                    try {
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
-
-                        byte[] byteArray = stream.toByteArray();
-                        encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                    }
-                    catch (NullPointerException e) {
-                        System.out.println("Cannot covert");
-                    }
-
 
                 } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                     Status status = PlaceAutocomplete.getStatus(this, data);

@@ -11,12 +11,13 @@ public class Pothole {
     String longitude;
     String encodedImage;
     String severity;
+    String timeStamp;
 
-    public Pothole(String latitude, String longitude, String encodedImage, String severity) {
+    public Pothole(String latitude, String longitude, String encodedImage, String severity, String timeStamp) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.encodedImage = encodedImage;
         this.severity = severity;
+        this.timeStamp = timeStamp;
     }
-
 }
