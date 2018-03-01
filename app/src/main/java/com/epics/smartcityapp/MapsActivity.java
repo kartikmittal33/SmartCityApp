@@ -134,33 +134,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setCancelable(true);
         builder.setTitle(null);
         builder.setMessage("The data has been sent");
+
+
+        //if the user has not selected severity or clicked picture or both
+        //send an alert and don't send the data to the server
+
+        if (spinner.getSelectedItem() == null  && encodedImage.equals("")) {
+            builder.setMessage("Severity not selected and photo not clicked");
+        }
+        else if (encodedImage.equals("")) {
+            builder.setMessage("Photo not clicked");
+        }
+        else if (spinner.getSelectedItem() == null) {
+            builder.setMessage("Severity not selected");
+        }
+        else {
+
+            //setting the severity as selected in the spinner
+            severity = spinner.getSelectedItem().toString();
+
+
+            //FIREBASE IMPLEMENTATION
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference databaseReference = database.getReference();
+
+            Pothole pothole = new Pothole(lat, lng, encodedImage, severity);
+
+            //get the key from the database to append the new pothole information in the server
+            String key = databaseReference.push().getKey();
+
+            //sending the data as a object to the server with the unique key
+            databaseReference.child(key).setValue(pothole);
+
+        }
+
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.cancel();
             }
         });
-
-//        if (spinner.getSelectedItem().toString().equals(""))
-
-        //setting the severity as selected in the spinner
-        severity = spinner.getSelectedItem().toString();
-
-
-        //FIREBASE IMPLEMENTATION
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference();
-
-        Pothole pothole = new Pothole(lat,lng,encodedImage,severity);
-
-        //get the key from the database to append the new pothole information in the server
-        String key = databaseReference.push().getKey();
-
-        //sending the data as a object to the server with the unique key
-        databaseReference.child(key).setValue(pothole);
-
-
         builder.show();
     }
 
@@ -274,6 +288,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(String s) {
             try {
                 JSONObject jsonObject = new JSONObject(s);
+
+                System.out.println(s);
 
                 lat = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
                         .getJSONObject("location").get("lat").toString();
