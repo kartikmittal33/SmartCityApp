@@ -145,7 +145,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Date date = Calendar.getInstance().getTime();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         timeStamp = simpleDateFormat.format(date);
-        System.out.println(timeStamp);
 
         //if the user has not selected severity or clicked picture or both
         //send an alert and don't send the data to the server
