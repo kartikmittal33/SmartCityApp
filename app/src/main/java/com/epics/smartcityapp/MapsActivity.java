@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -164,8 +165,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             severity = spinner.getSelectedItem().toString();
 
             //get the time when the data was sent and store it in a string
-            timeStamp = Calendar.getInstance().toString();
             System.out.println(timeStamp);
+
+
+            //setting the long and lat coordinates to those of center of map/screen
+            LatLng coordinates = mMap.getCameraPosition().target;
+            lat = Double.toString(coordinates.latitude);
+            lng = Double.toString(coordinates.longitude);
 
 
             //FIREBASE IMPLEMENTATION
@@ -218,7 +224,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
 
                 byte[] byteArray = stream.toByteArray();
+
                 encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+
+
+
+
 
             }
             catch (NullPointerException e) {
