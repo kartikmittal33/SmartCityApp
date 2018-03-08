@@ -221,17 +221,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //converting bitmap to base64 string to send it to server
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 
                 byte[] byteArray = stream.toByteArray();
 
                 encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-
-
-
-
-
+                //the encoded string has newline char, so to replace all newline char with empty string
+                encodedImage = encodedImage.replaceAll("\n","");
             }
             catch (NullPointerException e) {
                 System.out.println("Cannot covert");
