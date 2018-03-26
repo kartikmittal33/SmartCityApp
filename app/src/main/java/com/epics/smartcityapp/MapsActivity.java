@@ -65,12 +65,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Button send;
     private GoogleMap mMap;  //map object
     private TextView popup;
-    String lat = Double.toString(40.424544);  // latitude
-    String lng = Double.toString(-86.918871);  // longitude
+    double lat = 40.424544;  // latitude
+    double lng = -86.918871;  // longitude
     String encodedImage = "";           //converting image to BASE64 to send it to server
                                         // read it from website and decrypting it to get image back
     String severity = "Not selected";
     String timeStamp;
+
+
+    GPSTracker gpsTracker;
 
 
     @Override
@@ -133,6 +136,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        // Create class object
+        gpsTracker = new GPSTracker(MapsActivity.this);
+
+        // Check if GPS enabled
+        if(gpsTracker.canGetLocation()) {
+
+            lat = gpsTracker.getLatitude();
+            lng = gpsTracker.getLongitude();
+
+            // \n is for new line
+            Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + lat + "\nLong: " + lng, Toast.LENGTH_LONG).show();
+
+        } else {
+            // Can't get location.
+            // GPS or network is not enabled.
+            // Ask user to enable GPS/network in settings.
+            gpsTracker.showSettingsAlert();
+        }
+
     }
 
     public void onDataSent(View v) {
@@ -170,8 +192,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //setting the long and lat coordinates to those of center of map/screen
             LatLng coordinates = mMap.getCameraPosition().target;
-            lat = Double.toString(coordinates.latitude);
-            lng = Double.toString(coordinates.longitude);
+            lat = coordinates.latitude;
+            lng = coordinates.longitude;
 
 
             //FIREBASE IMPLEMENTATION
@@ -179,7 +201,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference databaseReference = database.getReference();
 
-            Pothole pothole = new Pothole(lat, lng, encodedImage, severity,timeStamp);
+            Pothole pothole = new Pothole(Double.toString(lat), Double.toString(lng), encodedImage, severity,timeStamp);
 
             //get the key from the database to append the new pothole information in the server
             String key = databaseReference.push().getKey();
@@ -259,9 +281,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-        LatLng westL = new LatLng(40.424544, -86.918871); //make a LatLng object for newLatLng method parameter with west lala cords
+        LatLng westL = new LatLng(lat, lng); //make a LatLng object for newLatLng method parameter with west lala cords
         mMap.moveCamera(CameraUpdateFactory.newLatLng(westL)); //move map around west lala
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(westL, 15)); //zoom with 15, shows streets but not too zoomed
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(westL, 18)); //zoom with 15, shows streets but not too zoomed
 
 
     }
@@ -303,13 +325,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 System.out.println(s);
 
-                lat = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
-                        .getJSONObject("location").get("lat").toString();
+                lat = Double.parseDouble(((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
+                        .getJSONObject("location").get("lat").toString());
 
-                lng = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
-                        .getJSONObject("location").get("lng").toString();
+                lng = Double.parseDouble(((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry")
+                        .getJSONObject("location").get("lng").toString());
 
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)), 18));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 18));
 
                 if (dialog.isShowing()) {
                     dialog.dismiss();
