@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -63,6 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String autoSelect;
     Button search;  //search address bar
     Button send;
+    ImageButton refresh; // button for refresh
     private GoogleMap mMap;  //map object
     private TextView popup;
     double lat = 40.424544;  // latitude
@@ -85,10 +87,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);  //implement maps fragment
         autoSelect = "Purdue Memorial Union, Grant Street, West Lafayette, IN";
-        spinner = (Spinner) findViewById(R.id.simplespinner);  //initialize spinner
+        spinner = findViewById(R.id.simplespinner);  //initialize spinner
         // edtAddress = (EditText) findViewById(R.id.btn_place);       //initialize address bar
-        search = (Button) findViewById(R.id.search);        //initialize search bar
-        send = (Button) findViewById(R.id.send);
+        search =  findViewById(R.id.search);        //initialize search bar
+        send = findViewById(R.id.send);
+
+        refresh = findViewById(R.id.refresh);
 
 
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -154,6 +158,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Ask user to enable GPS/network in settings.
             gpsTracker.showSettingsAlert();
         }
+
+
+
+        //for refreshing the app
+
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent starter = getIntent();
+                finish();
+                startActivity(starter);
+            }
+        });
 
     }
 
@@ -283,7 +300,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         LatLng westL = new LatLng(lat, lng); //make a LatLng object for newLatLng method parameter with west lala cords
         mMap.moveCamera(CameraUpdateFactory.newLatLng(westL)); //move map around west lala
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(westL, 18)); //zoom with 15, shows streets but not too zoomed
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(westL, 17)); //zoom with 18, shows streets but not too zoomed
 
 
     }
