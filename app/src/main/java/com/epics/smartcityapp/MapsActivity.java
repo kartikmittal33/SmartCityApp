@@ -218,6 +218,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference databaseReference = database.getReference();
 
+            //make a new pothole object to store all the info of pothole to send to the server
             Pothole pothole = new Pothole(Double.toString(lat), Double.toString(lng), encodedImage, severity,timeStamp);
 
             //get the key from the database to append the new pothole information in the server
