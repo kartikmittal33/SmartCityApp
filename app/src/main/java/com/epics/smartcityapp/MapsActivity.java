@@ -150,7 +150,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             lng = gpsTracker.getLongitude();
 
             // \n is for new line
-            Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + lat + "\nLong: " + lng, Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + lat + "\nLong: " + lng, Toast.LENGTH_LONG).show();
 
         } else {
             // Can't get location.
@@ -271,7 +271,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 encodedImage = encodedImage.replaceAll("\n","");
             }
             catch (NullPointerException e) {
-                System.out.println("Cannot covert");
+                System.out.println("Cannot convert");
             }
 
 
